@@ -7,7 +7,19 @@ import javafx.scene.shape.Rectangle;
 
 public class Position extends Pane {
     
-    enum Column { A, B, C, D, E, F, G, H };
+    enum Column {
+        A(1), B(2), C(3), D(4), E(5), F(6), G(7), H(8);
+
+        private int val;
+
+        Column(int val) {
+            this.val = val;
+        }
+
+        public int getVal() {
+            return val;
+        }
+    }
     enum Row { 
         ONE(1), TWO(2), THREE(3), FOUR(4), FIVE(5), SIX(6), SEVEN(7), EIGHT(8);
         
@@ -56,19 +68,11 @@ public class Position extends Pane {
     public void removePiece() {
         getChildren().remove(piece);
         piece = null;
-    }
-    
-    public void renderPiece() {
-        if (piece != null) {
-            getChildren().add(piece);
-        }
+        System.out.println("removed");
     }
 
     public boolean hasPiece() {
-        if (piece != null) {
-            return true;
-        }
-        return false;
+        return piece != null;
     }
 
     public Type getPieceType() {

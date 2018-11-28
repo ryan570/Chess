@@ -118,6 +118,7 @@ public class Board extends GridPane {
         } else {
             to = position;
             selectedPiece.move(from, to);
+            selectedPiece = null;
             selected = false;
         }
     }
