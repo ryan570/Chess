@@ -36,7 +36,7 @@ public class Piece extends Circle {
 
     private boolean checkCollisions(Position from, Position to) {
         boolean valid = false;
-
+        
 
 
         return valid;

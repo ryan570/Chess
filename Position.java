@@ -1,9 +1,10 @@
 package chess;
 
 import chess.Piece.Type;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 
 public class Position extends Pane {
     
@@ -43,11 +44,8 @@ public class Position extends Pane {
     public Position(Column column, Row row, boolean color) {
         setPrefSize(50, 50);
         
-        Rectangle rect = new Rectangle(0, 0, 50, 50);
-        if (color) rect.setFill(Color.BLACK);
-        else rect.setFill(Color.WHITE);
-        rect.setStroke(Color.BLACK);
-        getChildren().add(rect);
+        if (color) setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
+        else setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
         
         this.column = column;
         this.row = row;
