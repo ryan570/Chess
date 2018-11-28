@@ -10,8 +10,9 @@ import javafx.scene.paint.Color;
 public class Board extends GridPane {
 
     private Piece[] black, white;
-    private ArrayList<Position> positions;
-    private Column[] columns;
+    public static ArrayList<Position> positions;
+    public static Column[] columns;
+    public static Row[] rows;
     private Row frontRow, backRow;
     private Color color;
     private Piece[][] colors;
@@ -25,7 +26,7 @@ public class Board extends GridPane {
         to = new Position();
         selectedPiece = new Piece();
 
-        Row[] rows = new Row[]{Row.EIGHT, Row.SEVEN, Row.SIX, Row.FIVE, Row.FOUR, Row.THREE, Row.TWO, Row.ONE};
+        rows = new Row[]{Row.EIGHT, Row.SEVEN, Row.SIX, Row.FIVE, Row.FOUR, Row.THREE, Row.TWO, Row.ONE};
         columns = new Column[]{Column.A, Column.B, Column.C, Column.D, Column.E, Column.F, Column.G, Column.H};
         white = new Piece[16];
         black = new Piece[16];
@@ -123,12 +124,21 @@ public class Board extends GridPane {
         }
     }
 
-    private int findIndex(Column column, Row row) {
+    public static int findIndex(Column column, Row row) {
         for (Position position : positions) {
             if (position.getRow() == row && position.getColumn() == column) {
                 return positions.indexOf(position);
             }
         }
         return -1;
+    }
+    
+    public static Position findPosition(Column column, Row row) {
+        for (Position position : positions) {
+            if (position.getRow() == row && position.getColumn() == column) {
+                return position;
+            }
+        }
+        return null;
     }
 }

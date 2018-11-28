@@ -66,7 +66,6 @@ public class Position extends Pane {
     public void removePiece() {
         getChildren().remove(piece);
         piece = null;
-        System.out.println("removed");
     }
 
     public boolean hasPiece() {

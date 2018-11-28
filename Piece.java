@@ -33,13 +33,45 @@ public class Piece extends Circle {
     }
 
     public Type getType() { return type; }
+    
+    private Color getColor() {
+        return color;
+    }
 
     private boolean checkCollisions(Position from, Position to) {
-        boolean valid = false;
+        /*if (to.hasPiece()) {
+            if (to.getPiece().getColor() == color) {
+                return false;
+            } else {
+                to.getPiece().setPosition(null);
+                to.removePiece();
+                return true;
+            }
+            
+        }*/
+        //straight line
+        if (to.getRow() == from.getRow()) {
+            int currentCol = from.getColumn().getVal();
+            int futureCol = to.getColumn().getVal();
+            for (int i = Math.min(currentCol, futureCol) + 1; i < Math.max(futureCol, currentCol); i++) {
+                if (Board.findPosition(Board.columns[i - 1], from.getRow()).hasPiece()) return false;
+            }
+        } else if (to.getColumn() == from.getColumn()) {
+            int currentRow = from.getRow().getVal();
+            int futureRow = to.getRow().getVal();
+            for (int i = Math.min(currentRow, futureRow) + 1; i < Math.max(futureRow, currentRow); i++) {
+                if (Board.findPosition(from.getColumn(), Board.rows[8 - i]).hasPiece()) return false;
+            }
+        }
         
-
-
-        return valid;
+        //diagonal
+        
+        
+        return true;
+    }
+    
+    private void setPosition(Position pos) {
+        this.position = pos;
     }
     
     public boolean checkValidMove(Position from, Position to) {
@@ -73,8 +105,10 @@ public class Piece extends Circle {
                 if (currentCol == futureCol || currentRow == futureRow) valid = true;
                 break;
             case QUEEN:
-                if (Math.abs(rowDiff) == Math.abs(colDiff)) valid = true;
-                else if (currentCol == futureCol || currentRow == futureRow) valid = true;
+                if (checkCollisions(from, to)) {
+                    if (Math.abs(rowDiff) == Math.abs(colDiff)) valid = true;
+                    else if (currentCol == futureCol || currentRow == futureRow) valid = true;
+                }
                 break;
             case KING:
                 if (Math.abs(rowDiff) == Math.abs(colDiff) && Math.abs(colDiff) == 1 && Math.abs(rowDiff) == 1) valid = true;
