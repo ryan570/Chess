@@ -1,5 +1,6 @@
 package chess;
 
+import chess.Piece.Type;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -24,7 +25,9 @@ public class Position extends Pane {
     private Column column;
     private Row row;
     private Piece piece;
-    
+
+    public Position(){}
+
     public Position(Column column, Row row, boolean color) {
         setPrefSize(50, 50);
         
@@ -38,7 +41,10 @@ public class Position extends Pane {
         this.row = row;
         
         setOnMousePressed(e -> {
-            System.out.println(column + "" + row.getVal());
+            System.out.println(column + "" + row.getVal() + ": " + getPieceType());
+
+
+            Board.select(this);
         });
     }
     
@@ -56,6 +62,20 @@ public class Position extends Pane {
         if (piece != null) {
             getChildren().add(piece);
         }
+    }
+
+    public boolean hasPiece() {
+        if (piece != null) {
+            return true;
+        }
+        return false;
+    }
+
+    public Type getPieceType() {
+        if (piece != null) {
+            return piece.getType();
+        }
+        return null;
     }
     
     public Piece getPiece() {

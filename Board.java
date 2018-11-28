@@ -3,9 +3,7 @@ package chess;
 import chess.Piece.Type;
 import chess.Position.Column;
 import chess.Position.Row;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 
@@ -17,9 +15,15 @@ public class Board extends GridPane {
     private Row frontRow, backRow;
     private Color color;
     private Piece[][] colors;
+    private static boolean selected = false;
+    private static Position from, to;
+    private static Piece selectedPiece;
 
     public Board() {
         positions = new ArrayList<>();
+        from = new Position();
+        to = new Position();
+        selectedPiece = new Piece();
 
         Row[] rows = new Row[]{Row.EIGHT, Row.SEVEN, Row.SIX, Row.FIVE, Row.FOUR, Row.THREE, Row.TWO, Row.ONE};
         columns = new Column[]{Column.A, Column.B, Column.C, Column.D, Column.E, Column.F, Column.G, Column.H};
@@ -81,13 +85,13 @@ public class Board extends GridPane {
             array[11] = new Piece(positions.get(index), Type.BISHOP, color);
             positions.get(index).setPiece(array[11]);
             
-            //rookes
+            //rooks
             index = findIndex(Column.A, backRow);
-            array[12] = new Piece(positions.get(index), Type.ROOKE, color);
+            array[12] = new Piece(positions.get(index), Type.ROOK, color);
             positions.get(index).setPiece(array[12]);
             
             index = findIndex(Column.H, backRow);
-            array[13] = new Piece(positions.get(index), Type.ROOKE, color);
+            array[13] = new Piece(positions.get(index), Type.ROOK, color);
             positions.get(index).setPiece(array[13]);
             
             //queen
@@ -101,6 +105,20 @@ public class Board extends GridPane {
             positions.get(index).setPiece(array[15]);
             
             i++;
+        }
+    }
+
+    public static void select(Position position) {
+        if (!selected) {
+            if (position.hasPiece()) {
+                from = position;
+                selectedPiece = position.getPiece();
+                selected = true;
+            }
+        } else {
+            to = position;
+            selectedPiece.move(from, to);
+            selected = false;
         }
     }
 
