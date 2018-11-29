@@ -1,11 +1,10 @@
 package chess;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
 
-import java.util.stream.IntStream;
-
-public class Piece extends Circle {
+public class Piece extends ImageView {
 
     enum Type {
         PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING;
@@ -19,8 +18,34 @@ public class Piece extends Circle {
     }
 
     public Piece(Position position, Type type, Color color) {
-        super(25, 25, 15, color);
-        setStroke(Color.RED);
+        super();
+        switch(type) {
+            case PAWN:
+                if (color == Color.WHITE) setImage(new Image("chess/sprites/white-pawn.png"));
+                else setImage(new Image("chess/sprites/black-pawn.png"));
+                break;
+            case KNIGHT:
+                if (color == Color.WHITE) setImage(new Image("chess/sprites/white-knight.png"));
+                else setImage(new Image("chess/sprites/black-knight.png"));
+                break;
+            case BISHOP:
+                if (color == Color.WHITE) setImage(new Image("chess/sprites/white-bishop.png"));
+                else setImage(new Image("chess/sprites/black-bishop.png"));
+                break;
+            case ROOK:
+                if (color == Color.WHITE) setImage(new Image("chess/sprites/white-rook.png"));
+                else setImage(new Image("chess/sprites/black-rook.png"));
+                break;
+            case QUEEN:
+                if (color == Color.WHITE) setImage(new Image("chess/sprites/white-queen.png"));
+                else setImage(new Image("chess/sprites/black-queen.png"));
+                break;
+            case KING:
+                if (color == Color.WHITE) setImage(new Image("chess/sprites/white-king.png"));
+                else setImage(new Image("chess/sprites/black-king.png"));
+                break;
+            default: break;
+        }
 
         this.type = type;
         this.position = position;
