@@ -14,6 +14,7 @@ public class Chess extends Application {
         scene = new Scene(new Pane(), 400, 400);
 
         Board root = new Board();
+        GameController controller = new GameController(root);
 
         scene.setRoot(root);
         

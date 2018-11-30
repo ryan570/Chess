@@ -54,6 +54,7 @@ public class Piece extends ImageView {
         this.color = color;
     }
 
+
     public void move(Position from, Position to) {
         if (checkValidMove(from, to)) {
             position.removePiece();
@@ -64,6 +65,10 @@ public class Piece extends ImageView {
 
     public Type getType() {
         return type;
+    }
+
+    public Position getPosition() {
+        return position;
     }
 
     private Color getColor() {

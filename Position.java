@@ -1,6 +1,5 @@
 package chess;
 
-import chess.Piece.Type;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
@@ -39,8 +38,6 @@ public class Position extends BorderPane {
     private Row row;
     private Piece piece;
 
-    public Position(){}
-
     public Position(Column column, Row row, boolean color) {
         minWidthProperty().bind(Chess.scene.widthProperty().divide(8));
         minHeightProperty().bind(Chess.scene.heightProperty().divide(8));
@@ -51,12 +48,15 @@ public class Position extends BorderPane {
         this.column = column;
         this.row = row;
         
-        setOnMousePressed(e -> {
-            System.out.println(column + "" + row.getVal() + ": " + getPieceType());
+        setOnMousePressed(e -> GameController.select(this));
+    }
 
-
-            Board.select(this);
-        });
+    public void lock(boolean locked) {
+        if (locked) {
+            setOnMousePressed(null);
+        } else {
+            setOnMousePressed(n-> GameController.select(this));
+        }
     }
     
     public void setPiece(Piece piece) {
@@ -71,13 +71,6 @@ public class Position extends BorderPane {
 
     public boolean hasPiece() {
         return piece != null;
-    }
-
-    public Type getPieceType() {
-        if (piece != null) {
-            return piece.getType();
-        }
-        return null;
     }
     
     public Piece getPiece() {

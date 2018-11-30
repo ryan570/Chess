@@ -9,22 +9,14 @@ import javafx.scene.paint.Color;
 
 public class Board extends GridPane {
 
-    private Piece[] black, white;
-    public static ArrayList<Position> positions;
+    public Piece[] black, white;
+    private static ArrayList<Position> positions;
     public static Column[] columns;
     public static Row[] rows;
-    private Row frontRow, backRow;
-    private Color color;
     private Piece[][] colors;
-    private static boolean selected = false;
-    private static Position from, to;
-    private static Piece selectedPiece;
 
     public Board() {
         positions = new ArrayList<>();
-        from = new Position();
-        to = new Position();
-        selectedPiece = new Piece();
 
         rows = new Row[]{Row.EIGHT, Row.SEVEN, Row.SIX, Row.FIVE, Row.FOUR, Row.THREE, Row.TWO, Row.ONE};
         columns = new Column[]{Column.A, Column.B, Column.C, Column.D, Column.E, Column.F, Column.G, Column.H};
@@ -50,6 +42,9 @@ public class Board extends GridPane {
     private void addPieces() {
         int i = 0;
         for (Piece[] array : colors) {
+            Row frontRow;
+            Row backRow;
+            Color color;
             if (i == 0) {
                 color = Color.WHITE;
                 frontRow = Row.TWO;
@@ -109,22 +104,7 @@ public class Board extends GridPane {
         }
     }
 
-    public static void select(Position position) {
-        if (!selected) {
-            if (position.hasPiece()) {
-                from = position;
-                selectedPiece = position.getPiece();
-                selected = true;
-            }
-        } else {
-            to = position;
-            selectedPiece.move(from, to);
-            selectedPiece = null;
-            selected = false;
-        }
-    }
-
-    public static int findIndex(Column column, Row row) {
+    private static int findIndex(Column column, Row row) {
         for (Position position : positions) {
             if (position.getRow() == row && position.getColumn() == column) {
                 return positions.indexOf(position);
