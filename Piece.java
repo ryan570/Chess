@@ -73,58 +73,12 @@ public class Piece extends ImageView {
         if (diagonal) {
             int currentCol = from.getColumn().getVal(), currentRow = from.getRow().getVal();
             int futureCol = to.getColumn().getVal(), futureRow = to.getRow().getVal();
+
             int rowDiff = futureRow - currentRow, colDiff = futureCol - currentCol;
+            int ddX = colDiff / Math.abs(colDiff), ddY = rowDiff / Math.abs(rowDiff);
 
-            //up and to the right
-            if (rowDiff > 0 && colDiff > 0) {
-                int current = currentRow + 1;
-                for (int i = currentCol + 1; i < futureCol; i++) {
-                    for (int j = currentRow + 1; j < futureRow; j++) {
-                        if (j == current) {
-                            if (Board.findPosition(Board.columns[i - 1], Board.rows[8 - j]).hasPiece()) return false;
-                        }
-                    }
-                    current++;
-                }
-            }
-
-            //up and to the left
-            if (rowDiff > 0 && colDiff < 0) {
-                int current = currentRow + 1;
-                for (int i = currentCol - 1; i > futureCol; i--) {
-                    for (int j = currentRow + 1; j < futureRow; j++) {
-                        if (j == current) {
-                            if (Board.findPosition(Board.columns[i - 1], Board.rows[8 - j]).hasPiece()) return false;
-                        }
-                    }
-                    current++;
-                }
-            }
-
-            //down and to the right
-            if (rowDiff < 0 && colDiff > 0) {
-                int current = currentRow - 1;
-                for (int i = currentCol + 1; i < futureCol; i++) {
-                    for (int j = currentRow - 1; j > futureRow; j--) {
-                        if (j == current) {
-                            if (Board.findPosition(Board.columns[i - 1], Board.rows[8 - j]).hasPiece()) return false;
-                        }
-                    }
-                    current--;
-                }
-            }
-
-            //down and to the left
-            if (rowDiff < 0 && colDiff < 0) {
-                int current = currentRow - 1;
-                for (int i = currentCol - 1; i > futureCol; i--) {
-                    for (int j = currentRow - 1; j > futureRow; j--) {
-                        if (j == current) {
-                            if (Board.findPosition(Board.columns[i - 1], Board.rows[8 - j]).hasPiece()) return false;
-                        }
-                    }
-                    current--;
-                }
+            for (int i = 1; i < Math.abs(colDiff); i++) {
+                if (Board.findPosition(Board.columns[currentCol + (i * ddX) - 1], Board.rows[8 - (currentRow + (i * ddY))]).hasPiece()) return false;
             }
         }
 
