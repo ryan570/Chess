@@ -3,10 +3,10 @@ package chess;
 import chess.Piece.Type;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 
-public class Position extends Pane {
+public class Position extends BorderPane {
     
     enum Column {
         A(1), B(2), C(3), D(4), E(5), F(6), G(7), H(8);
@@ -42,8 +42,9 @@ public class Position extends Pane {
     public Position(){}
 
     public Position(Column column, Row row, boolean color) {
-        setPrefSize(50, 50);
-        
+        minWidthProperty().bind(Chess.scene.widthProperty().divide(8));
+        minHeightProperty().bind(Chess.scene.heightProperty().divide(8));
+
         if (color) setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
         else setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
         
@@ -60,7 +61,7 @@ public class Position extends Pane {
     
     public void setPiece(Piece piece) {
         this.piece = piece;
-        getChildren().add(piece);
+        setCenter(piece);
     }
     
     public void removePiece() {

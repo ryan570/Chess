@@ -18,7 +18,9 @@ public class Piece extends ImageView {
     }
 
     public Piece(Position position, Type type, Color color) {
-        super();
+        fitWidthProperty().bind(position.widthProperty());
+        fitHeightProperty().bind(position.heightProperty());
+
         switch(type) {
             case PAWN:
                 if (color == Color.WHITE) setImage(new Image("chess/sprites/white-pawn.png"));
