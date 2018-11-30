@@ -47,16 +47,8 @@ public class Position extends BorderPane {
         
         this.column = column;
         this.row = row;
-        
-        setOnMousePressed(e -> GameController.select(this));
-    }
 
-    public void lock(boolean locked) {
-        if (locked) {
-            setOnMousePressed(null);
-        } else {
-            setOnMousePressed(n-> GameController.select(this));
-        }
+        setOnMousePressed(n-> GameController.select(this));
     }
     
     public void setPiece(Piece piece) {
@@ -66,6 +58,7 @@ public class Position extends BorderPane {
     
     public void removePiece() {
         getChildren().remove(piece);
+        piece.setPosition(null);
         piece = null;
     }
 

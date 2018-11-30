@@ -13,9 +13,7 @@ public class Piece extends ImageView {
     private Type type;
     private Position position;
     private Color color;
-
-    public Piece() {
-    }
+    private boolean unlocked;
 
     public Piece(Position position, Type type, Color color) {
         fitWidthProperty().bind(position.widthProperty());
@@ -56,32 +54,38 @@ public class Piece extends ImageView {
 
 
     public void move(Position from, Position to) {
-        if (checkValidMove(from, to)) {
+        boolean valid = checkValidMove(from, to);
+        boolean noCollisions = checkCollisions(from, to);
+        if (valid && noCollisions && unlocked) {
             position.removePiece();
-            to.setPiece(this);
-            position = to;
+            setPosition(to);
+            position.setPiece(this);
         }
-    }
-
-    public Type getType() {
-        return type;
     }
 
     public Position getPosition() {
         return position;
     }
 
+    public void setLocked(boolean locked) {
+        this.unlocked = !locked;
+    }
+
     private Color getColor() {
         return color;
     }
 
-    private boolean checkCollisions(Position from, Position to, boolean diagonal) {
-        //diagonal
-        if (diagonal) {
-            int currentCol = from.getColumn().getVal(), currentRow = from.getRow().getVal();
-            int futureCol = to.getColumn().getVal(), futureRow = to.getRow().getVal();
+    private boolean checkCollisions(Position from, Position to) {
+        int currentRow = from.getRow().getVal();
+        int currentCol = from.getColumn().getVal();
+        int futureRow = to.getRow().getVal();
+        int futureCol = to.getColumn().getVal();
 
-            int rowDiff = futureRow - currentRow, colDiff = futureCol - currentCol;
+        int rowDiff = futureRow - currentRow;
+        int colDiff = futureCol - currentCol;
+
+        //diagonal
+        if (Math.abs(rowDiff) == Math.abs(colDiff)) {
             int ddX = colDiff / Math.abs(colDiff), ddY = rowDiff / Math.abs(rowDiff);
 
             for (int i = 1; i < Math.abs(colDiff); i++) {
@@ -91,14 +95,10 @@ public class Piece extends ImageView {
 
         //straight line
         else if (to.getRow() == from.getRow()) {
-            int currentCol = from.getColumn().getVal();
-            int futureCol = to.getColumn().getVal();
             for (int i = Math.min(currentCol, futureCol) + 1; i < Math.max(futureCol, currentCol); i++) {
                 if (Board.findPosition(Board.columns[i - 1], from.getRow()).hasPiece()) return false;
             }
         } else if (to.getColumn() == from.getColumn()) {
-            int currentRow = from.getRow().getVal();
-            int futureRow = to.getRow().getVal();
             for (int i = Math.min(currentRow, futureRow) + 1; i < Math.max(futureRow, currentRow); i++) {
                 if (Board.findPosition(from.getColumn(), Board.rows[8 - i]).hasPiece()) return false;
             }
@@ -115,19 +115,15 @@ public class Piece extends ImageView {
         if (to.getPiece().getColor() == color) {
             return false;
         } else {
-            to.getPiece().setPosition(null);
-            to.removePiece();
             return true;
         }
     }
 
-    private void setPosition(Position pos) {
+    public void setPosition(Position pos) {
         this.position = pos;
     }
 
     public boolean checkValidMove(Position from, Position to) {
-        boolean valid = false;
-
         int currentRow = from.getRow().getVal();
         int currentCol = from.getColumn().getVal();
         int futureRow = to.getRow().getVal();
@@ -141,47 +137,32 @@ public class Piece extends ImageView {
             case PAWN:
                 if (to.getColumn() == from.getColumn()) {
                     if ((currentRow == 2 && color == Color.WHITE) || (currentRow == 7 && color == Color.BLACK)) {
-                        if (rowDiff <= 2 && rowDiff >= -2) valid = true;
-                    } else if (rowDiff == 1 && color == Color.WHITE) valid = true;
-                    else if (rowDiff == -1 && color == Color.BLACK) valid = true;
+                        if (rowDiff <= 2 && rowDiff >= -2) return true;
+                    } else if (rowDiff == 1 && color == Color.WHITE) return true;
+                    else if (rowDiff == -1 && color == Color.BLACK) return true;
                 }
                 break;
             case KNIGHT:
-                if (Math.abs(colDiff) == 2 && Math.abs(rowDiff) == 1) {
-                    if (to.hasPiece()) checkFinal(to);
-                    valid = true;
-                } else if (Math.abs(colDiff) == 1 && Math.abs(rowDiff) == 2) {
-                    if (to.hasPiece()) checkFinal(to);
-                    valid = true;
-                }
+                if (Math.abs(colDiff) == 2 && Math.abs(rowDiff) == 1) return true;
+                else if (Math.abs(colDiff) == 1 && Math.abs(rowDiff) == 2) return true;
                 break;
             case BISHOP:
-                if ((Math.abs(rowDiff) == Math.abs(colDiff))) {
-                    if (checkCollisions(from, to, Math.abs(rowDiff) == Math.abs(colDiff))) valid = true;
-                }
+                if ((Math.abs(rowDiff) == Math.abs(colDiff))) return true;
                 break;
             case ROOK:
-                if ((currentCol == futureCol || currentRow == futureRow)) {
-                    if (checkCollisions(from, to, Math.abs(rowDiff) == Math.abs(colDiff))) valid = true;
-                }
+                if ((currentCol == futureCol || currentRow == futureRow)) return true;
                 break;
             case QUEEN:
-                if (Math.abs(rowDiff) == Math.abs(colDiff)) {
-                    if (checkCollisions(from, to, Math.abs(rowDiff) == Math.abs(colDiff))) valid = true;
-                } else if ((currentCol == futureCol || currentRow == futureRow)) {
-                    if (checkCollisions(from, to, Math.abs(rowDiff) == Math.abs(colDiff))) valid = true;
-                }
+                if (Math.abs(rowDiff) == Math.abs(colDiff)) return true;
+                else if ((currentCol == futureCol || currentRow == futureRow)) return true;
                 break;
             case KING:
-                if ((Math.abs(rowDiff) == Math.abs(colDiff) && Math.abs(colDiff) == 1 && Math.abs(rowDiff) == 1)) {
-                    if (checkCollisions(from, to, Math.abs(rowDiff) == Math.abs(colDiff))) valid = true;
-                } else if (((currentCol == futureCol || currentRow == futureRow) && (Math.abs(colDiff) == 1 || Math.abs(rowDiff) == 1))) {
-                    if (checkCollisions(from, to, Math.abs(rowDiff) == Math.abs(colDiff))) valid = true;
-                }
+                if ((Math.abs(rowDiff) == Math.abs(colDiff) && Math.abs(colDiff) == 1 && Math.abs(rowDiff) == 1)) return true;
+                    else if (((currentCol == futureCol || currentRow == futureRow) && (Math.abs(colDiff) == 1 || Math.abs(rowDiff) == 1))) return true;
                 break;
             default:
                 break;
         }
-        return valid;
+        return false;
     }
 }

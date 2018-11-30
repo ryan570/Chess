@@ -10,7 +10,7 @@ import javafx.scene.paint.Color;
 public class Board extends GridPane {
 
     public Piece[] black, white;
-    private static ArrayList<Position> positions;
+    public static ArrayList<Position> positions;
     public static Column[] columns;
     public static Row[] rows;
     private Piece[][] colors;

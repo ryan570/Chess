@@ -6,47 +6,59 @@ public class GameController {
     private static Board board;
     private static Position from, to;
     private static Piece selectedPiece;
+    private static Piece[] white, black;
 
     public GameController(Board board) {
         this.board = board;
 
-        turn = false;
+        white = board.white;
+        black = board.black;
+        turn = true;
         selected = false;
         play();
     }
 
     private static void play() {
         if (turn) {
-            for (Piece piece : board.white) {
-                piece.getPosition().lock(true);
-            }
-            for (Piece piece : board.black) {
-                piece.getPosition().lock(false);
-            }
+            unlock(white);
         } else {
-            for (Piece piece : board.white) {
-                piece.getPosition().lock(false);
+            unlock(black);
+        }
+    }
+
+    private static void unlock(Piece[] color) {
+        if (color == white) {
+            for (Piece piece : white) {
+                piece.setLocked(false);
             }
-            for (Piece piece : board.black) {
-                piece.getPosition().lock(true);
+            for (Piece piece : black) {
+                piece.setLocked(true);
+            }
+        } else if (color == black) {
+            for (Piece piece : white) {
+                piece.setLocked(true);
+            }
+            for (Piece piece : black) {
+                piece.setLocked(false);
             }
         }
     }
 
+
+
     public static void select(Position position) {
         if (!selected) {
-            if (position.hasPiece()) {
-                from = position;
-                selectedPiece = position.getPiece();
-                selected = true;
-            }
+            from = position;
+            selectedPiece = position.getPiece();
+            if (selectedPiece != null) selected = true;
         } else {
             to = position;
-            if(from.equals(to)) return;
+            if (from.equals(to)) return;
             selectedPiece.move(from, to);
-            selectedPiece = null;
+            if (selectedPiece.getPosition() != from) {
+                turn = !turn;
+            }
             selected = false;
-            turn = !turn;
             play();
         }
     }
