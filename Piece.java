@@ -11,7 +11,7 @@ public class Piece extends ImageView {
     }
 
     private Type type;
-    private Position position;
+    private Position position, past;
     private Color color;
     private boolean unlocked;
 
@@ -54,13 +54,23 @@ public class Piece extends ImageView {
     }
 
 
-    public void move(Position from, Position to) {
+    public void queue(Position from, Position to) {
         boolean valid = checkValidMove(from, to);
         boolean noCollisions = checkCollisions(from, to);
         if ((valid && noCollisions && unlocked) || (type == Type.PAWN && valid && unlocked)) {
-            position.removePiece();
+            past = position;
             setPosition(to);
+        }
+    }
+
+    public void update(boolean good) {
+        if (good) {
+            past.removePiece();
             position.setPiece(this);
+
+            past = null;
+        } else {
+            setPosition(past);
         }
     }
 
@@ -72,11 +82,11 @@ public class Piece extends ImageView {
         this.unlocked = !locked;
     }
 
-    private Color getColor() {
+    public Color getColor() {
         return color;
     }
 
-    private boolean checkCollisions(Position from, Position to) {
+    public boolean checkCollisions(Position from, Position to) {
         int currentRow = from.getRow().getVal();
         int currentCol = from.getColumn().getVal();
         int futureRow = to.getRow().getVal();
@@ -139,7 +149,8 @@ public class Piece extends ImageView {
                     if ((currentRow == 2 && color == Color.WHITE) || (currentRow == 7 && color == Color.BLACK)) {
                         if (rowDiff <= 2 && rowDiff >= -2) return true;
                     } else if (Math.abs(rowDiff) == 1) return true;
-                } else if (checkFinal(to) && Math.abs(colDiff) == 1 && ((rowDiff == 1 && color == Color.WHITE) || (rowDiff == -1 && color == Color.BLACK))) return true;
+                } else if (checkFinal(to) && Math.abs(colDiff) == 1 && ((rowDiff == 1 && color == Color.WHITE) || (rowDiff == -1 && color == Color.BLACK)))
+                    return true;
                 break;
             case KNIGHT:
                 if (Math.abs(colDiff) == 2 && Math.abs(rowDiff) == 1) return true;
