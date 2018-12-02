@@ -59,17 +59,19 @@ public class Piece extends ImageView {
         boolean noCollisions = checkCollisions(from, to);
         if ((valid && noCollisions && unlocked) || (type == Type.PAWN && valid && unlocked)) {
             past = position;
+            to.queue(this);
             setPosition(to);
         }
     }
 
-    public void update(boolean good) {
-        if (good) {
-            past.removePiece();
+    public void update(boolean bad) {
+        if (!bad) {
+            if (past != null) past.removePiece();
             position.setPiece(this);
 
             past = null;
         } else {
+            position.queue(null);
             setPosition(past);
         }
     }
@@ -86,7 +88,16 @@ public class Piece extends ImageView {
         return color;
     }
 
-    public boolean checkCollisions(Position from, Position to) {
+    public boolean canMoveTo(Position pos) {
+        boolean noCollisions = checkCollisions(position, pos);
+        boolean validMove = checkValidMove(position, pos);
+        if ((noCollisions || type == type.PAWN) && validMove) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkCollisions(Position from, Position to) {
         int currentRow = from.getRow().getVal();
         int currentCol = from.getColumn().getVal();
         int futureRow = to.getRow().getVal();
@@ -129,11 +140,11 @@ public class Piece extends ImageView {
         } else return false;
     }
 
-    public void setPosition(Position pos) {
+    private void setPosition(Position pos) {
         this.position = pos;
     }
 
-    public boolean checkValidMove(Position from, Position to) {
+    private boolean checkValidMove(Position from, Position to) {
         int currentRow = from.getRow().getVal();
         int currentCol = from.getColumn().getVal();
         int futureRow = to.getRow().getVal();

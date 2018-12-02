@@ -1,8 +1,10 @@
 package chess;
 
+import javafx.scene.paint.Color;
+
 public class GameController {
 
-    private static boolean turn, selected, whiteCheck, blackCheck, first;
+    private static boolean turn, selected, check, first;
     private static Position from, to;
     private static Piece selectedPiece;
     private static Piece[] white, black;
@@ -18,15 +20,13 @@ public class GameController {
 
     private static void play() {
         if (turn) {
+            if (!first) check = inCheck(Color.WHITE);
             unlock(white);
-            if (!first) whiteCheck = inCheck(white);
         } else {
+            if (!first) check = inCheck(Color.BLACK);
             unlock(black);
-            if (!first) blackCheck = inCheck(black);
         }
         first = false;
-        System.out.println("black: " + blackCheck);
-        System.out.println("white: " + whiteCheck);
     }
 
     private static void unlock(Piece[] color) {
@@ -47,22 +47,21 @@ public class GameController {
         }
     }
 
-    private static boolean inCheck(Piece[] array) {
+    private static boolean inCheck(Color color) {
         Piece king;
-        if (array == white) {
+        Piece[] array;
+        if (color == Color.WHITE) {
             king = white[15];
             array = black;
         } else {
             king = black[15];
             array = white;
         }
-
         for (Piece piece : array) {
-            boolean valid = piece.checkValidMove(piece.getPosition(), king.getPosition());
-            boolean noCollisions = piece.checkCollisions(piece.getPosition(), king.getPosition());
-            if (valid && noCollisions) return true;
+            if (piece.canMoveTo(king.getPosition())) {
+                return true;
+            }
         }
-
         return false;
     }
 
@@ -75,22 +74,14 @@ public class GameController {
             to = position;
             if (from.equals(to)) return;
             selectedPiece.queue(from, to);
-            if (whiteCheck) {
-                System.out.println(1);
-                boolean solved = !inCheck(white);
-                whiteCheck = !solved;
-                selectedPiece.update(solved);
+            if (check) {
+                check = inCheck(selectedPiece.getColor());
+                selectedPiece.update(check);
                 selected = false;
-                if (!solved) return;
+                if (check) return;
+            } else {
+                selectedPiece.update(false);
             }
-            else if (blackCheck) {
-                boolean solved = !inCheck(black);
-                blackCheck = !solved;
-                selectedPiece.update(solved);
-                selected = false;
-                if (!solved) return;
-            }
-            selectedPiece.update(true);
             if (selectedPiece.getPosition() != from) {
                 turn = !turn;
             }

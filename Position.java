@@ -55,15 +55,22 @@ public class Position extends BorderPane {
         this.piece = piece;
         setCenter(piece);
     }
+
+    public String toString() {
+        return column + "" + row.getVal();
+    }
     
     public void removePiece() {
         getChildren().remove(piece);
-        piece.setPosition(null);
         piece = null;
     }
 
     public boolean hasPiece() {
         return piece != null;
+    }
+
+    public void queue(Piece piece) {
+        this.piece = piece;
     }
     
     public Piece getPiece() {
