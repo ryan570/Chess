@@ -6,7 +6,7 @@ public class GameController {
 
     private static boolean turn, selected, check, first;
     private static Position from, to;
-    private static Piece selectedPiece;
+    private static Piece selectedPiece, current;
     private static Piece[] white, black;
 
     public GameController(Board board) {
@@ -58,8 +58,10 @@ public class GameController {
             array = white;
         }
         for (Piece piece : array) {
-            if (piece.canMoveTo(king.getPosition())) {
-                return true;
+            if (piece.getPosition() != null) {
+                if (piece.canMoveTo(king.getPosition())) {
+                    return true;
+                }
             }
         }
         return false;
@@ -73,12 +75,24 @@ public class GameController {
         } else {
             to = position;
             if (from.equals(to)) return;
+            if (to.hasPiece()) {
+                current = to.getPiece();
+                to.getPiece().setPosition(null);
+            }
             selectedPiece.queue(from, to);
+            if (selectedPiece.getType() == Piece.Type.KING && inCheck(selectedPiece.getColor())) {
+                to.revert();
+                selectedPiece.update(true);
+                return;
+            }
             if (check) {
                 check = inCheck(selectedPiece.getColor());
                 selectedPiece.update(check);
                 selected = false;
-                if (check) return;
+                if (check) {
+                    to.revert();
+                    return;
+                }
             } else {
                 selectedPiece.update(false);
             }

@@ -36,7 +36,7 @@ public class Position extends BorderPane {
     
     private Column column;
     private Row row;
-    private Piece piece;
+    private Piece piece, past;
 
     public Position(Column column, Row row, boolean color) {
         minWidthProperty().bind(Chess.scene.widthProperty().divide(8));
@@ -70,7 +70,13 @@ public class Position extends BorderPane {
     }
 
     public void queue(Piece piece) {
+        past = piece;
         this.piece = piece;
+    }
+
+    public void revert() {
+        piece = past;
+        piece.setPosition(this);
     }
     
     public Piece getPiece() {

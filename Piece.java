@@ -71,13 +71,17 @@ public class Piece extends ImageView {
 
             past = null;
         } else {
-            position.queue(null);
+            position.revert();
             setPosition(past);
         }
     }
 
     public Position getPosition() {
         return position;
+    }
+
+    public Type getType() {
+        return type;
     }
 
     public void setLocked(boolean locked) {
@@ -140,7 +144,7 @@ public class Piece extends ImageView {
         } else return false;
     }
 
-    private void setPosition(Position pos) {
+    public void setPosition(Position pos) {
         this.position = pos;
     }
 
