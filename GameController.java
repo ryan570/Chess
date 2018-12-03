@@ -1,6 +1,10 @@
 package chess;
 
+import javafx.scene.Scene;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 
 public class GameController {
 
@@ -20,13 +24,45 @@ public class GameController {
 
     private static void play() {
         if (turn) {
+            checkPromotion(black, Color.BLACK);
             if (!first) check = inCheck(Color.WHITE);
             unlock(white);
         } else {
+            checkPromotion(white, Color.WHITE);
             if (!first) check = inCheck(Color.BLACK);
             unlock(black);
         }
         first = false;
+    }
+
+    private static void checkPromotion(Piece[] array, Color color) {
+        for (Piece piece : array) {
+            if (piece.getPosition() != null) {
+                if (piece.getType() == Piece.Type.PAWN && (piece.getPosition().getRow() == Position.Row.EIGHT || piece.getPosition().getRow() == Position.Row.ONE)) {
+                    HBox box = new HBox();
+                    Piece[] choices = new Piece[]{
+                            new Piece(null, Piece.Type.KNIGHT, color),
+                            new Piece(null, Piece.Type.BISHOP, color),
+                            new Piece(null, Piece.Type.ROOK, color),
+                            new Piece(null, Piece.Type.QUEEN, color)
+                    };
+                    Scene scene = new Scene(box, 190,50);
+                    Stage stage = new Stage();
+
+                    for (Piece p : choices) {
+                        box.getChildren().add(p);
+                        p.setOnMousePressed(n -> {
+                            piece.setType(p.getType());
+                            stage.close();
+                        });
+                    }
+
+                    stage.setScene(scene);
+                    stage.setTitle("Select Piece");
+                    stage.show();
+                }
+            }
+        }
     }
 
     private static void unlock(Piece[] color) {

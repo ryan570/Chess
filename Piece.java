@@ -16,9 +16,19 @@ public class Piece extends ImageView {
     private boolean unlocked;
 
     public Piece(Position position, Type type, Color color) {
-        fitWidthProperty().bind(position.widthProperty());
-        fitHeightProperty().bind(position.heightProperty());
+        if (position != null) {
+            fitWidthProperty().bind(position.widthProperty());
+            fitHeightProperty().bind(position.heightProperty());
+        }
 
+        this.type = type;
+        this.position = position;
+        this.color = color;
+
+        assignImage();
+    }
+
+    private void assignImage() {
         switch (type) {
             case PAWN:
                 if (color == Color.WHITE) setImage(new Image("chess/sprites/white-pawn.png"));
@@ -47,12 +57,7 @@ public class Piece extends ImageView {
             default:
                 break;
         }
-
-        this.type = type;
-        this.position = position;
-        this.color = color;
     }
-
 
     public void queue(Position from, Position to) {
         boolean valid = checkValidMove(from, to);
@@ -82,6 +87,11 @@ public class Piece extends ImageView {
 
     public Type getType() {
         return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+        assignImage();
     }
 
     public void setLocked(boolean locked) {
