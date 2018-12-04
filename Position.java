@@ -56,31 +56,30 @@ public class Position extends BorderPane {
         setCenter(piece);
     }
 
-    public String toString() {
-        return column + "" + row.getVal();
-    }
-    
     public void removePiece() {
         getChildren().remove(piece);
         piece = null;
+    }
+
+    public void queue(Piece piece, boolean to) {
+        past = this.piece;
+        if (to && hasPiece()) {
+            past.setPosition(null);
+        }
+        setPiece(piece);
+    }
+
+    public void update(boolean bad) {
+        if (bad) {
+            setPiece(past);
+            if (past != null) past.setPosition(this);
+        }
     }
 
     public boolean hasPiece() {
         return piece != null;
     }
 
-    public void queue(Piece piece) {
-        if (hasPiece()) past = piece;
-        this.piece = piece;
-    }
-
-    public void revert() {
-        piece = past;
-        if (piece != null) {
-            piece.setPosition(this);
-        }
-    }
-    
     public Piece getPiece() {
         return piece;
     }
@@ -91,5 +90,9 @@ public class Position extends BorderPane {
     
     public Column getColumn() {
         return column;
+    }
+
+    public String toString() {
+        return column + "" + row.getVal();
     }
 }

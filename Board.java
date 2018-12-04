@@ -10,7 +10,7 @@ import javafx.scene.paint.Color;
 public class Board extends GridPane {
 
     public Piece[] black, white;
-    public static ArrayList<Position> positions;
+    private static ArrayList<Position> positions;
     public static Column[] columns;
     public static Row[] rows;
     private Piece[][] colors;
@@ -57,60 +57,42 @@ public class Board extends GridPane {
             
             //pawns
             for (int j = 0; j < 8; j++) {
-                int index = findIndex(columns[j], frontRow);
-                Position position = positions.get(index);
+                Position position = findPosition(columns[j], frontRow);
                 array[j] = new Piece(position, Type.PAWN, color);
-                positions.get(index).setPiece(array[j]);
+                position.setPiece(array[j]);
             }
             
             //knights
-            int index = findIndex(Column.B, backRow);
-            array[8] = new Piece(positions.get(index), Type.KNIGHT, color);
-            positions.get(index).setPiece(array[8]);
-            
-            index = findIndex(Column.G, backRow);
-            array[9] = new Piece(positions.get(index), Type.KNIGHT, color);
-            positions.get(index).setPiece(array[9]);
+            array[8] = new Piece(findPosition(Column.B, backRow), Type.KNIGHT, color);
+            findPosition(Column.B, backRow).setPiece(array[8]);
+
+            array[9] = new Piece(findPosition(Column.G, backRow), Type.KNIGHT, color);
+            findPosition(Column.G, backRow).setPiece(array[9]);
             
             //bishops
-            index = findIndex(Column.C, backRow);
-            array[10] = new Piece(positions.get(index), Type.BISHOP, color);
-            positions.get(index).setPiece(array[10]);
-            
-            index = findIndex(Column.F, backRow);
-            array[11] = new Piece(positions.get(index), Type.BISHOP, color);
-            positions.get(index).setPiece(array[11]);
+            array[10] = new Piece(findPosition(Column.C, backRow), Type.BISHOP, color);
+            findPosition(Column.C, backRow).setPiece(array[10]);
+
+            array[11] = new Piece(findPosition(Column.F, backRow), Type.BISHOP, color);
+            findPosition(Column.F, backRow).setPiece(array[11]);
             
             //rooks
-            index = findIndex(Column.A, backRow);
-            array[12] = new Piece(positions.get(index), Type.ROOK, color);
-            positions.get(index).setPiece(array[12]);
-            
-            index = findIndex(Column.H, backRow);
-            array[13] = new Piece(positions.get(index), Type.ROOK, color);
-            positions.get(index).setPiece(array[13]);
+            array[12] = new Piece(findPosition(Column.A, backRow), Type.ROOK, color);
+            findPosition(Column.A, backRow).setPiece(array[12]);
+
+            array[13] = new Piece(findPosition(Column.H, backRow), Type.ROOK, color);
+            findPosition(Column.H, backRow).setPiece(array[13]);
             
             //queen
-            index = findIndex(Column.D, backRow);
-            array[14] = new Piece(positions.get(index), Type.QUEEN, color);
-            positions.get(index).setPiece(array[14]);
+            array[14] = new Piece(findPosition(Column.D, backRow), Type.QUEEN, color);
+            findPosition(Column.D, backRow).setPiece(array[14]);
             
             //king
-            index = findIndex(Column.E, backRow);
-            array[15] = new Piece(positions.get(index), Type.KING, color);
-            positions.get(index).setPiece(array[15]);
+            array[15] = new Piece(findPosition(Column.E, backRow), Type.KING, color);
+            findPosition(Column.E, backRow).setPiece(array[15]);
             
             i++;
         }
-    }
-
-    private static int findIndex(Column column, Row row) {
-        for (Position position : positions) {
-            if (position.getRow() == row && position.getColumn() == column) {
-                return positions.indexOf(position);
-            }
-        }
-        return -1;
     }
     
     public static Position findPosition(Column column, Row row) {

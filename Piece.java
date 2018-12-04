@@ -59,57 +59,37 @@ public class Piece extends ImageView {
         }
     }
 
-    public void queue(Position from, Position to) {
-        boolean valid = checkValidMove(from, to);
-        boolean noCollisions = checkCollisions(from, to);
-        if ((valid && noCollisions && unlocked) || (type == Type.PAWN && valid && unlocked)) {
-            past = position;
-            position.queue(null);
-            to.queue(this);
-            setPosition(to);
-        }
+    public void queue(Position to) {
+        past = position;
+        setPosition(to);
     }
 
     public void update(boolean bad) {
         if (!bad) {
             if (past != null) past.removePiece();
             position.setPiece(this);
-
             past = null;
         } else {
-            position.revert();
             setPosition(past);
+            past = null;
         }
     }
 
-    public Position getPosition() {
-        return position;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
-        assignImage();
-    }
-
-    public void setLocked(boolean locked) {
-        this.unlocked = !locked;
-    }
-
-    public Color getColor() {
-        return color;
-    }
-
-    public boolean canMoveTo(Position pos) {
+    public boolean canMoveTo(Position pos, boolean mustBeUnlocked) {
         boolean noCollisions = checkCollisions(position, pos);
         boolean validMove = checkValidMove(position, pos);
-        if ((noCollisions || type == type.PAWN) && validMove) {
-            return true;
+
+        if (mustBeUnlocked) {
+            if ((noCollisions || type == type.PAWN) && validMove && unlocked) {
+                return true;
+            }
+            return false;
+        } else {
+            if ((noCollisions || type == type.PAWN) && validMove) {
+                return true;
+            }
+            return false;
         }
-        return false;
     }
 
     private boolean checkCollisions(Position from, Position to) {
@@ -122,7 +102,7 @@ public class Piece extends ImageView {
         int colDiff = futureCol - currentCol;
 
         //diagonal
-        if (Math.abs(rowDiff) == Math.abs(colDiff)) {
+        if (Math.abs(rowDiff) == Math.abs(colDiff) && rowDiff != 0) {
             int ddX = colDiff / Math.abs(colDiff), ddY = rowDiff / Math.abs(rowDiff);
 
             for (int i = 1; i < Math.abs(colDiff); i++) {
@@ -153,10 +133,6 @@ public class Piece extends ImageView {
         if (to.hasPiece()) {
             return to.getPiece().getColor() != color;
         } else return false;
-    }
-
-    public void setPosition(Position pos) {
-        this.position = pos;
     }
 
     private boolean checkValidMove(Position from, Position to) {
@@ -202,5 +178,30 @@ public class Piece extends ImageView {
                 break;
         }
         return false;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+        assignImage();
+    }
+
+    public void setLocked(boolean locked) {
+        this.unlocked = !locked;
+    }
+
+    public void setPosition(Position pos) {
+        this.position = pos;
+    }
+
+    public Position getPosition() {
+        return position;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public Color getColor() {
+        return color;
     }
 }
