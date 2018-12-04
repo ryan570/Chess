@@ -70,13 +70,15 @@ public class Position extends BorderPane {
     }
 
     public void queue(Piece piece) {
-        past = piece;
+        if (hasPiece()) past = piece;
         this.piece = piece;
     }
 
     public void revert() {
         piece = past;
-        piece.setPosition(this);
+        if (piece != null) {
+            piece.setPosition(this);
+        }
     }
     
     public Piece getPiece() {

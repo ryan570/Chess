@@ -64,6 +64,7 @@ public class Piece extends ImageView {
         boolean noCollisions = checkCollisions(from, to);
         if ((valid && noCollisions && unlocked) || (type == Type.PAWN && valid && unlocked)) {
             past = position;
+            position.queue(null);
             to.queue(this);
             setPosition(to);
         }

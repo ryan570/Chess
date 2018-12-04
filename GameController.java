@@ -2,7 +2,6 @@ package chess;
 
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -41,10 +40,10 @@ public class GameController {
                 if (piece.getType() == Piece.Type.PAWN && (piece.getPosition().getRow() == Position.Row.EIGHT || piece.getPosition().getRow() == Position.Row.ONE)) {
                     HBox box = new HBox();
                     Piece[] choices = new Piece[]{
-                            new Piece(null, Piece.Type.KNIGHT, color),
-                            new Piece(null, Piece.Type.BISHOP, color),
+                            new Piece(null, Piece.Type.QUEEN, color),
                             new Piece(null, Piece.Type.ROOK, color),
-                            new Piece(null, Piece.Type.QUEEN, color)
+                            new Piece(null, Piece.Type.BISHOP, color),
+                            new Piece(null, Piece.Type.KNIGHT, color)
                     };
                     Scene scene = new Scene(box, 190,50);
                     Stage stage = new Stage();
@@ -107,18 +106,21 @@ public class GameController {
         if (!selected) {
             from = position;
             selectedPiece = position.getPiece();
+            System.out.println(selectedPiece.getPosition().toString());
             if (selectedPiece != null) selected = true;
         } else {
             to = position;
             if (from.equals(to)) return;
             if (to.hasPiece()) {
                 current = to.getPiece();
-                to.getPiece().setPosition(null);
+                current.setPosition(null);
             }
             selectedPiece.queue(from, to);
-            if (selectedPiece.getType() == Piece.Type.KING && inCheck(selectedPiece.getColor())) {
+            if (inCheck(selectedPiece.getColor())) {
                 to.revert();
                 selectedPiece.update(true);
+                selectedPiece = null;
+                selected = false;
                 return;
             }
             if (check) {
@@ -126,15 +128,13 @@ public class GameController {
                 selectedPiece.update(check);
                 selected = false;
                 if (check) {
+                    current.setPosition(to);
                     to.revert();
                     return;
                 }
-            } else {
-                selectedPiece.update(false);
             }
-            if (selectedPiece.getPosition() != from) {
-                turn = !turn;
-            }
+            selectedPiece.update(false);
+            if (from != selectedPiece.getPosition()) turn = !turn;
             selected = false;
             play();
         }
