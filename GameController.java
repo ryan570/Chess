@@ -76,31 +76,44 @@ public class GameController {
         } else {
             array = black;
         }
+
         if (!inCheck(color)) {
-            if (to.getColumn() == Column.B) {
-                if (array[12].getPosition() != null) {
-                    rook = array[12];
-                    if (rook.getPosition().getRow() == Row.ONE && rook.getPosition().getColumn() == Column.A) {
-                        selectedPiece.update(false);
-                        from.update(false);
-                        to.update(false);
-                        pos = board.findPosition(Column.C, Row.ONE);
-                        rook.setPosition(pos);
-                        pos.setPiece(rook);
+            selectedPiece.queue(to);
+            from.queue(null, false);
+            to.queue(selectedPiece, true);
+
+            if (!inCheck(color)) {
+                if (to.getColumn() == Column.B) {
+                    if (array[12].getPosition() != null) {
+                        rook = array[12];
+                        if (rook.getPosition().getRow() == Row.ONE && rook.getPosition().getColumn() == Column.A) {
+                            selectedPiece.update(false);
+                            from.update(false);
+                            to.update(false);
+                            pos = board.findPosition(Column.C, Row.ONE);
+                            rook.setPosition(pos);
+                            pos.setPiece(rook);
+                            turn = !turn;
+                        }
+                    }
+                } else if (to.getColumn() == Column.G) {
+                    if (array[13].getPosition() != null) {
+                        rook = array[13];
+                        if (rook.getPosition().getRow() == Row.ONE && rook.getPosition().getColumn() == Column.H) {
+                            selectedPiece.update(false);
+                            from.update(false);
+                            to.update(false);
+                            pos = board.findPosition(Column.F, Row.ONE);
+                            rook.setPosition(pos);
+                            pos.setPiece(rook);
+                            turn = !turn;
+                        }
                     }
                 }
-            } else if (to.getColumn() == Column.G) {
-                if (array[13].getPosition() != null) {
-                    rook = array[13];
-                    if (rook.getPosition().getRow() == Row.ONE && rook.getPosition().getColumn() == Column.H) {
-                        selectedPiece.update(false);
-                        from.update(false);
-                        to.update(false);
-                        pos = board.findPosition(Column.F, Row.ONE);
-                        rook.setPosition(pos);
-                        pos.setPiece(rook);
-                    }
-                }
+            } else {
+                selectedPiece.update(true);
+                from.update(true);
+                from.update(true);
             }
         }
     }
@@ -158,20 +171,20 @@ public class GameController {
             boolean[] results = selectedPiece.canMoveTo(position, true);
 
             if (results[0]) {
-                selectedPiece.queue(position);
-                from.queue(null, false);
-                position.queue(selectedPiece, true);
-
                 if (results[1]) {
                     checkCastle(selectedPiece.getColor(), from, position);
+                } else {
+                    selectedPiece.queue(position);
+                    from.queue(null, false);
+                    position.queue(selectedPiece, true);
+
+                    boolean check = inCheck(selectedPiece.getColor());
+                    selectedPiece.update(check);
+                    from.update(check);
+                    position.update(check);
+
+                    if (!check) turn = !turn;
                 }
-
-                boolean check = inCheck(selectedPiece.getColor());
-                selectedPiece.update(check);
-                from.update(check);
-                position.update(check);
-
-                if (!check) turn = !turn;
             }
             selectedPiece = null;
             selected = false;
