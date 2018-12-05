@@ -1,5 +1,7 @@
 package chess;
 
+import chess.Position.Row;
+import chess.Position.Column;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
@@ -13,7 +15,7 @@ public class Piece extends ImageView {
     private Type type;
     private Position position, past;
     private Color color;
-    private boolean unlocked;
+    private boolean unlocked, castle;
 
     public Piece(Position position, Type type, Color color) {
         if (position != null) {
@@ -75,21 +77,29 @@ public class Piece extends ImageView {
         }
     }
 
-    public boolean canMoveTo(Position pos, boolean mustBeUnlocked) {
+    public boolean[] canMoveTo(Position pos, boolean mustBeUnlocked) {
+        boolean[] results = new boolean[2];
+
         boolean noCollisions = checkCollisions(position, pos);
         boolean validMove = checkValidMove(position, pos);
 
         if (mustBeUnlocked) {
             if ((noCollisions || type == type.PAWN) && validMove && unlocked) {
-                return true;
+                results[0] = true;
+            } else {
+                results[0] = false;
             }
-            return false;
         } else {
             if ((noCollisions || type == type.PAWN) && validMove) {
-                return true;
+                results[0] = true;
+            } else {
+                results[0] = false;
             }
-            return false;
         }
+
+        if (castle) results[1] = true;
+
+        return results;
     }
 
     private boolean checkCollisions(Position from, Position to) {
@@ -136,6 +146,8 @@ public class Piece extends ImageView {
     }
 
     private boolean checkValidMove(Position from, Position to) {
+        castle = false;
+
         int currentRow = from.getRow().getVal();
         int currentCol = from.getColumn().getVal();
         int futureRow = to.getRow().getVal();
@@ -171,8 +183,18 @@ public class Piece extends ImageView {
             case KING:
                 if ((Math.abs(rowDiff) == Math.abs(colDiff) && Math.abs(colDiff) == 1 && Math.abs(rowDiff) == 1))
                     return true;
-                else if (((currentCol == futureCol || currentRow == futureRow) && (Math.abs(colDiff) == 1 || Math.abs(rowDiff) == 1)))
-                    return true;
+                else if (((currentCol == futureCol || currentRow == futureRow))) {
+                    if (Math.abs(colDiff) == 1 || Math.abs(rowDiff) == 1) return true;
+                    if (to.getColumn() == Column.B || to.getColumn() == Column.G) {
+                        if (from.getRow() == Row.EIGHT && getColor() == Color.BLACK) {
+                            castle = true;
+                            return true;
+                        } else if (from.getRow() == Row.ONE && getColor() == Color.WHITE) {
+                            castle = true;
+                            return true;
+                        }
+                    }
+                }
                 break;
             default:
                 break;

@@ -1,6 +1,8 @@
 package chess;
 
 import chess.Piece.Type;
+import chess.Position.Column;
+import chess.Position.Row;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -12,8 +14,10 @@ public class GameController {
     private static Position from;
     private static Piece selectedPiece;
     private static Piece[] white, black;
+    private static Board board;
 
     public GameController(Board board) {
+        this.board = board;
         white = board.white;
         black = board.black;
         turn = true;
@@ -42,7 +46,7 @@ public class GameController {
                             new Piece(null, Type.BISHOP, color),
                             new Piece(null, Type.KNIGHT, color)
                     };
-                    Scene scene = new Scene(box, 180,50);
+                    Scene scene = new Scene(box, 180, 45);
                     Stage stage = new Stage();
 
                     for (Piece p : choices) {
@@ -53,9 +57,49 @@ public class GameController {
                         });
                     }
 
+                    stage.setResizable(false);
                     stage.setScene(scene);
                     stage.setTitle("Select Piece");
                     stage.show();
+                }
+            }
+        }
+    }
+
+    public static void checkCastle(Color color, Position from, Position to) {
+        Piece[] array;
+        Piece rook;
+        Position pos;
+
+        if (color == Color.WHITE) {
+            array = white;
+        } else {
+            array = black;
+        }
+        if (!inCheck(color)) {
+            if (to.getColumn() == Column.B) {
+                if (array[12].getPosition() != null) {
+                    rook = array[12];
+                    if (rook.getPosition().getRow() == Row.ONE && rook.getPosition().getColumn() == Column.A) {
+                        selectedPiece.update(false);
+                        from.update(false);
+                        to.update(false);
+                        pos = board.findPosition(Column.C, Row.ONE);
+                        rook.setPosition(pos);
+                        pos.setPiece(rook);
+                    }
+                }
+            } else if (to.getColumn() == Column.G) {
+                if (array[13].getPosition() != null) {
+                    rook = array[13];
+                    if (rook.getPosition().getRow() == Row.ONE && rook.getPosition().getColumn() == Column.H) {
+                        selectedPiece.update(false);
+                        from.update(false);
+                        to.update(false);
+                        pos = board.findPosition(Column.F, Row.ONE);
+                        rook.setPosition(pos);
+                        pos.setPiece(rook);
+                    }
                 }
             }
         }
@@ -91,7 +135,7 @@ public class GameController {
         }
         for (Piece piece : array) {
             if (piece.getPosition() != null) {
-                if (piece.canMoveTo(king.getPosition(), false)) {
+                if (piece.canMoveTo(king.getPosition(), false)[0]) {
                     return true;
                 }
             }
@@ -110,10 +154,17 @@ public class GameController {
                 selectedPiece = null;
                 return;
             }
-            if (selectedPiece.canMoveTo(position, true)) {
+
+            boolean[] results = selectedPiece.canMoveTo(position, true);
+
+            if (results[0]) {
                 selectedPiece.queue(position);
                 from.queue(null, false);
                 position.queue(selectedPiece, true);
+
+                if (results[1]) {
+                    checkCastle(selectedPiece.getColor(), from, position);
+                }
 
                 boolean check = inCheck(selectedPiece.getColor());
                 selectedPiece.update(check);
