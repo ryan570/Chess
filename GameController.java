@@ -14,10 +14,8 @@ public class GameController {
     private static Position from;
     private static Piece selectedPiece;
     private static Piece[] white, black;
-    private static Board board;
 
     public GameController(Board board) {
-        this.board = board;
         white = board.white;
         black = board.black;
         turn = true;
@@ -86,11 +84,11 @@ public class GameController {
                 if (to.getColumn() == Column.B) {
                     if (array[12].getPosition() != null) {
                         rook = array[12];
-                        if (rook.getPosition().getRow() == Row.ONE && rook.getPosition().getColumn() == Column.A) {
+                        if (rook.getPosition().getRow() == Row.ONE && rook.getPosition().getColumn() == Column.A && !rook.hasMoved()) {
                             selectedPiece.update(false);
                             from.update(false);
                             to.update(false);
-                            pos = board.findPosition(Column.C, Row.ONE);
+                            pos = Board.findPosition(Column.C, Row.ONE);
                             rook.setPosition(pos);
                             pos.setPiece(rook);
                             turn = !turn;
@@ -99,11 +97,11 @@ public class GameController {
                 } else if (to.getColumn() == Column.G) {
                     if (array[13].getPosition() != null) {
                         rook = array[13];
-                        if (rook.getPosition().getRow() == Row.ONE && rook.getPosition().getColumn() == Column.H) {
+                        if (rook.getPosition().getRow() == Row.ONE && rook.getPosition().getColumn() == Column.H && !rook.hasMoved()) {
                             selectedPiece.update(false);
                             from.update(false);
                             to.update(false);
-                            pos = board.findPosition(Column.F, Row.ONE);
+                            pos = Board.findPosition(Column.F, Row.ONE);
                             rook.setPosition(pos);
                             pos.setPiece(rook);
                             turn = !turn;
