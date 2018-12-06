@@ -10,7 +10,7 @@ import javafx.scene.paint.Color;
 public class Board extends GridPane {
 
     public Piece[] black, white;
-    private static ArrayList<Position> positions;
+    public static ArrayList<Position> positions;
     public static Column[] columns;
     public static Row[] rows;
     private Piece[][] colors;
@@ -24,6 +24,7 @@ public class Board extends GridPane {
         black = new Piece[16];
         colors = new Piece[][] {white, black};
 
+        //creates all chess board positions
         boolean color = false;
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -40,6 +41,7 @@ public class Board extends GridPane {
     }
 
     private void addPieces() {
+        //adds pieces to both players
         int i = 0;
         for (Piece[] array : colors) {
             Row frontRow;
@@ -96,11 +98,21 @@ public class Board extends GridPane {
     }
     
     public static Position findPosition(Column column, Row row) {
+        //returns a certain position based on row and column
         for (Position position : positions) {
             if (position.getRow() == row && position.getColumn() == column) {
                 return position;
             }
         }
         return null;
+    }
+
+    public void reset() {
+        //resets the board
+        for (Position pos : positions) {
+            pos.removePiece();
+        }
+
+        addPieces();
     }
 }

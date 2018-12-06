@@ -20,6 +20,7 @@ public class Piece extends ImageView {
 
     public Piece(Position position, Type type, Color color) {
         if (position != null) {
+            //binds piece size to overall window size
             fitWidthProperty().bind(position.widthProperty());
             fitHeightProperty().bind(position.heightProperty());
         }
@@ -33,6 +34,7 @@ public class Piece extends ImageView {
     }
 
     private void assignImage() {
+        //assigns the sprites for each type of piece
         switch (type) {
             case PAWN:
                 if (color == Color.WHITE) setImage(new Image("chess/sprites/white-pawn.png"));
@@ -64,11 +66,13 @@ public class Piece extends ImageView {
     }
 
     public void queue(Position to) {
+        //queues a possible move
         past = position;
         setPosition(to);
     }
 
     public void update(boolean bad) {
+        //updates the position depending on if the move was legal
         if (!bad) {
             if (past != null) past.removePiece();
             position.setPiece(this);
@@ -81,6 +85,7 @@ public class Piece extends ImageView {
     }
 
     public boolean[] canMoveTo(Position pos, boolean mustBeUnlocked) {
+        //checks if the piece can move to a specified position
         boolean[] results = new boolean[2];
 
         boolean noCollisions = checkCollisions(position, pos);
@@ -106,6 +111,7 @@ public class Piece extends ImageView {
     }
 
     private boolean checkCollisions(Position from, Position to) {
+        //checks for movement collisions
         int currentRow = from.getRow().getVal();
         int currentCol = from.getColumn().getVal();
         int futureRow = to.getRow().getVal();
@@ -143,12 +149,14 @@ public class Piece extends ImageView {
     }
 
     private boolean checkFinal(Position to) {
+        //checks if the final position has a piece
         if (to.hasPiece()) {
             return to.getPiece().getColor() != color;
         } else return false;
     }
 
     private boolean checkValidMove(Position from, Position to) {
+        //checks if the move is valid based on type
         castle = false;
 
         int currentRow = from.getRow().getVal();
@@ -206,6 +214,7 @@ public class Piece extends ImageView {
     }
 
     public void setType(Type type) {
+        //reassigns type for pawn promotion
         this.type = type;
         assignImage();
     }

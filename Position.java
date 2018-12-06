@@ -39,9 +39,11 @@ public class Position extends BorderPane {
     private Piece piece, past;
 
     public Position(Column column, Row row, boolean color) {
+        //binds square size to overall window size
         minWidthProperty().bind(Chess.scene.widthProperty().divide(8));
         minHeightProperty().bind(Chess.scene.heightProperty().divide(8));
 
+        //sets the colors to black or white
         if (color) setBackground(new Background(new BackgroundFill(Color.BLACK, null, null)));
         else setBackground(new Background(new BackgroundFill(Color.WHITE, null, null)));
         
@@ -52,16 +54,19 @@ public class Position extends BorderPane {
     }
     
     public void setPiece(Piece piece) {
+        //sets the piece for this position
         this.piece = piece;
         setCenter(piece);
     }
 
     public void removePiece() {
+        //removes the positions piece
         getChildren().remove(piece);
         piece = null;
     }
 
     public void queue(Piece piece, boolean to) {
+        //queues a possible move
         past = this.piece;
         if (to && hasPiece()) {
             past.setPosition(null);
@@ -70,6 +75,7 @@ public class Position extends BorderPane {
     }
 
     public void update(boolean bad) {
+        //updates the position if the move was legal
         if (bad) {
             setPiece(past);
             if (past != null) past.setPosition(this);

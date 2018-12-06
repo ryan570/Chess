@@ -11,24 +11,26 @@ import javafx.stage.Stage;
 
 public class GameController {
 
-    private static boolean turn, selected;
+    public static boolean turn, selected;
     private static Position from;
     private static Piece selectedPiece;
     private static Piece[] white, black;
-    private static int currentMove;
-
+    public static int currentMove;
 
     public GameController(Board board) {
         white = board.white;
         black = board.black;
 
+
+        //sets up the current board state
         turn = true;
         currentMove = 0;
         selected = false;
         play();
     }
 
-    private static void play() {
+    public static void play() {
+        //unlocks one color and checks for possible pawn promotion
         if (turn) {
             checkPromotion(black, Color.BLACK);
             unlock(white);
@@ -39,6 +41,7 @@ public class GameController {
     }
 
     private static void checkPromotion(Piece[] array, Color color) {
+        //checks for if pawns have reached other edge of board and allows for them to become a different type
         for (Piece piece : array) {
             if (piece.getPosition() != null) {
                 if (piece.getType() == Type.PAWN && (piece.getPosition().getRow() == Position.Row.EIGHT || piece.getPosition().getRow() == Position.Row.ONE)) {
@@ -61,7 +64,7 @@ public class GameController {
                     }
 
                     Platform.setImplicitExit(false);
-                    stage.setOnCloseRequest(n-> {
+                    stage.setOnCloseRequest(n -> {
                         if (piece.getType() == Type.PAWN) {
                             n.consume();
                         }
@@ -76,6 +79,7 @@ public class GameController {
     }
 
     private static void checkCastle(Color color, Position from, Position to) {
+        //checks to see if a castle is possible if the piece thinks the attempted move was a castle
         Piece[] array;
         Piece rook;
         Position pos;
@@ -130,6 +134,7 @@ public class GameController {
     }
 
     private static void checkEnPassant(Piece piece, Position from, Position to) {
+        //checks for a possible en passant move with pawns
         if (piece.getType() == Type.PAWN && !inCheck(piece.getColor())) {
 
             int currentCol = from.getColumn().getVal();
@@ -143,26 +148,29 @@ public class GameController {
                 } else if (piece.getColor() == Color.BLACK && from.getRow() == Row.FOUR) {
                     row = Row.FOUR;
                 }
-                Position pawnPos = (Board.findPosition(to.getColumn(), row));
-                if (pawnPos.hasPiece()) {
-                    Piece pawn = pawnPos.getPiece();
 
-                    if (pawn.getType() == Type.PAWN && pawn.getColor() != piece.getColor()) {
-                        if (pawn.getLastMove() + 1 == currentMove) {
-                            selectedPiece.queue(to);
-                            from.queue(null, false);
-                            to.queue(selectedPiece, true);
+                if (row != null) {
+                    Position pawnPos = (Board.findPosition(to.getColumn(), row));
+                    if (pawnPos.hasPiece()) {
+                        Piece pawn = pawnPos.getPiece();
 
-                            boolean check = inCheck(selectedPiece.getColor());
-                            selectedPiece.update(check);
-                            from.update(check);
-                            to.update(check);
+                        if (pawn.getType() == Type.PAWN && pawn.getColor() != piece.getColor()) {
+                            if (pawn.getLastMove() + 1 == currentMove) {
+                                selectedPiece.queue(to);
+                                from.queue(null, false);
+                                to.queue(selectedPiece, true);
 
-                            if (!check) {
-                                turn = !turn;
-                                pawn.setPosition(null);
-                                pawnPos.removePiece();
-                                selectedPiece.setLastMove(currentMove);
+                                boolean check = inCheck(selectedPiece.getColor());
+                                selectedPiece.update(check);
+                                from.update(check);
+                                to.update(check);
+
+                                if (!check) {
+                                    turn = !turn;
+                                    pawn.setPosition(null);
+                                    pawnPos.removePiece();
+                                    selectedPiece.setLastMove(currentMove);
+                                }
                             }
                         }
                     }
@@ -172,6 +180,7 @@ public class GameController {
     }
 
     private static void unlock(Piece[] color) {
+        //unlocks one color and locks the other
         if (color == white) {
             for (Piece piece : white) {
                 piece.setLocked(false);
@@ -191,6 +200,7 @@ public class GameController {
     }
 
     private static boolean inCheck(Color color) {
+        //checks for if the selected color of king is in check
         Piece king;
         Piece[] array;
         if (color == Color.WHITE) {
@@ -212,10 +222,12 @@ public class GameController {
 
     public static void select(Position position) {
         if (!selected) {
+            //called at first when an initial piece is selected
             from = position;
             selectedPiece = position.getPiece();
             if (selectedPiece != null) selected = true;
         } else {
+            //called after a piece is selected and the user attempts to move it
             if (from.equals(position)) {
                 selected = false;
                 selectedPiece = null;
