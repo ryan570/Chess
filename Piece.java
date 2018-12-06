@@ -16,6 +16,7 @@ public class Piece extends ImageView {
     private Position position, past;
     private Color color;
     private boolean unlocked, castle;
+    private int lastMove;
 
     public Piece(Position position, Type type, Color color) {
         if (position != null) {
@@ -207,12 +208,20 @@ public class Piece extends ImageView {
         assignImage();
     }
 
+    public void setLastMove(int last) {
+        lastMove = last;
+    }
+
     public void setLocked(boolean locked) {
         this.unlocked = !locked;
     }
 
     public void setPosition(Position pos) {
         this.position = pos;
+    }
+
+    public int getLastMove() {
+        return lastMove;
     }
 
     public Position getPosition() {

@@ -3,6 +3,7 @@ package chess;
 import chess.Piece.Type;
 import chess.Position.Column;
 import chess.Position.Row;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -14,13 +15,14 @@ public class GameController {
     private static Position from;
     private static Piece selectedPiece;
     private static Piece[] white, black;
-    private static Board board;
+    private static int currentMove;
 
     public GameController(Board board) {
-        this.board = board;
         white = board.white;
         black = board.black;
+
         turn = true;
+        currentMove = 0;
         selected = false;
         play();
     }
@@ -46,7 +48,7 @@ public class GameController {
                             new Piece(null, Type.BISHOP, color),
                             new Piece(null, Type.KNIGHT, color)
                     };
-                    Scene scene = new Scene(box, 180, 45);
+                    Scene scene = new Scene(box, 170, 35);
                     Stage stage = new Stage();
 
                     for (Piece p : choices) {
@@ -57,6 +59,12 @@ public class GameController {
                         });
                     }
 
+                    Platform.setImplicitExit(false);
+                    stage.setOnCloseRequest(n-> {
+                        if (piece.getType() == Type.PAWN) {
+                            n.consume();
+                        }
+                    });
                     stage.setResizable(false);
                     stage.setScene(scene);
                     stage.setTitle("Select Piece");
@@ -66,7 +74,7 @@ public class GameController {
         }
     }
 
-    public static void checkCastle(Color color, Position from, Position to) {
+    private static void checkCastle(Color color, Position from, Position to) {
         Piece[] array;
         Piece rook;
         Position pos;
@@ -90,10 +98,11 @@ public class GameController {
                             selectedPiece.update(false);
                             from.update(false);
                             to.update(false);
-                            pos = board.findPosition(Column.C, Row.ONE);
+                            pos = Board.findPosition(Column.C, Row.ONE);
                             rook.setPosition(pos);
                             pos.setPiece(rook);
                             turn = !turn;
+                            selectedPiece.setLastMove(currentMove);
                         }
                     }
                 } else if (to.getColumn() == Column.G) {
@@ -103,10 +112,11 @@ public class GameController {
                             selectedPiece.update(false);
                             from.update(false);
                             to.update(false);
-                            pos = board.findPosition(Column.F, Row.ONE);
+                            pos = Board.findPosition(Column.F, Row.ONE);
                             rook.setPosition(pos);
                             pos.setPiece(rook);
                             turn = !turn;
+                            selectedPiece.setLastMove(currentMove);
                         }
                     }
                 }
@@ -114,6 +124,48 @@ public class GameController {
                 selectedPiece.update(true);
                 from.update(true);
                 from.update(true);
+            }
+        }
+    }
+
+    private static void checkEnPassant(Piece piece, Position from, Position to) {
+        if (piece.getType() == Type.PAWN && !inCheck(piece.getColor())) {
+
+            int currentCol = from.getColumn().getVal();
+            int futureCol = to.getColumn().getVal();
+            int colDiff = futureCol - currentCol;
+
+            if (Math.abs(colDiff) == 1 && !to.hasPiece()) {
+                Row row = null;
+                if (piece.getColor() == Color.WHITE && from.getRow() == Row.FIVE) {
+                    row = Row.FIVE;
+                } else if (piece.getColor() == Color.BLACK && from.getRow() == Row.FOUR) {
+                    row = Row.FOUR;
+                }
+                Position pawnPos = (Board.findPosition(to.getColumn(), row));
+                if (pawnPos.hasPiece()) {
+                    Piece pawn = pawnPos.getPiece();
+
+                    if (pawn.getType() == Type.PAWN && pawn.getColor() != piece.getColor()) {
+                        if (pawn.getLastMove() + 1 == currentMove) {
+                            selectedPiece.queue(to);
+                            from.queue(null, false);
+                            to.queue(selectedPiece, true);
+
+                            boolean check = inCheck(selectedPiece.getColor());
+                            selectedPiece.update(check);
+                            from.update(check);
+                            to.update(check);
+
+                            if (!check) {
+                                turn = !turn;
+                                pawn.setPosition(null);
+                                pawnPos.removePiece();
+                                selectedPiece.setLastMove(currentMove);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -134,6 +186,7 @@ public class GameController {
                 piece.setLocked(false);
             }
         }
+        currentMove++;
     }
 
     private static boolean inCheck(Color color) {
@@ -170,6 +223,7 @@ public class GameController {
 
             boolean[] results = selectedPiece.canMoveTo(position, true);
 
+            checkEnPassant(selectedPiece, from, position);
             if (results[0]) {
                 if (results[1]) {
                     checkCastle(selectedPiece.getColor(), from, position);
@@ -183,7 +237,10 @@ public class GameController {
                     from.update(check);
                     position.update(check);
 
-                    if (!check) turn = !turn;
+                    if (!check) {
+                        turn = !turn;
+                        selectedPiece.setLastMove(currentMove);
+                    }
                 }
             }
             selectedPiece = null;
