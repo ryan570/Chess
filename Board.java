@@ -3,7 +3,12 @@ package chess;
 import chess.Piece.Type;
 import chess.Position.Column;
 import chess.Position.Row;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 
