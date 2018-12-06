@@ -15,7 +15,7 @@ public class Piece extends ImageView {
     private Type type;
     private Position position, past;
     private Color color;
-    private boolean unlocked, castle;
+    private boolean unlocked, castle, hasMoved;
     private int lastMove;
 
     public Piece(Position position, Type type, Color color) {
@@ -27,6 +27,7 @@ public class Piece extends ImageView {
         this.type = type;
         this.position = position;
         this.color = color;
+        hasMoved = false;
 
         assignImage();
     }
@@ -72,6 +73,7 @@ public class Piece extends ImageView {
             if (past != null) past.removePiece();
             position.setPiece(this);
             past = null;
+            hasMoved = true;
         } else {
             setPosition(past);
             past = null;
@@ -186,7 +188,7 @@ public class Piece extends ImageView {
                     return true;
                 else if (((currentCol == futureCol || currentRow == futureRow))) {
                     if (Math.abs(colDiff) == 1 || Math.abs(rowDiff) == 1) return true;
-                    if (to.getColumn() == Column.B || to.getColumn() == Column.G) {
+                    if (to.getColumn() == Column.B || to.getColumn() == Column.G && !hasMoved) {
                         if (from.getRow() == Row.EIGHT && getColor() == Color.BLACK) {
                             castle = true;
                             return true;
@@ -234,5 +236,9 @@ public class Piece extends ImageView {
 
     public Color getColor() {
         return color;
+    }
+
+    public boolean hasMoved() {
+        return hasMoved;
     }
 }

@@ -17,6 +17,7 @@ public class GameController {
     private static Piece[] white, black;
     private static int currentMove;
 
+
     public GameController(Board board) {
         white = board.white;
         black = board.black;
@@ -94,7 +95,7 @@ public class GameController {
                 if (to.getColumn() == Column.B) {
                     if (array[12].getPosition() != null) {
                         rook = array[12];
-                        if (rook.getPosition().getRow() == Row.ONE && rook.getPosition().getColumn() == Column.A) {
+                        if (rook.getPosition().getRow() == Row.ONE && rook.getPosition().getColumn() == Column.A && !rook.hasMoved()) {
                             selectedPiece.update(false);
                             from.update(false);
                             to.update(false);
@@ -108,7 +109,7 @@ public class GameController {
                 } else if (to.getColumn() == Column.G) {
                     if (array[13].getPosition() != null) {
                         rook = array[13];
-                        if (rook.getPosition().getRow() == Row.ONE && rook.getPosition().getColumn() == Column.H) {
+                        if (rook.getPosition().getRow() == Row.ONE && rook.getPosition().getColumn() == Column.H && !rook.hasMoved()) {
                             selectedPiece.update(false);
                             from.update(false);
                             to.update(false);
