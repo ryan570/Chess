@@ -14,7 +14,7 @@ public class Chess extends Application {
     @Override
     public void start(Stage primaryStage) {
         //prevents npe
-        scene = new Scene(new Pane(), 400, 420);
+        scene = new Scene(new Pane(), 400, 400);
 
         //creates the board
         Board root = new Board();

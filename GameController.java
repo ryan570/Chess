@@ -52,7 +52,7 @@ public class GameController {
                             new Piece(null, Type.BISHOP, color),
                             new Piece(null, Type.KNIGHT, color)
                     };
-                    Scene scene = new Scene(box, 170, 35);
+                    Scene scene = new Scene(box, 180, 45);
                     Stage stage = new Stage();
 
                     for (Piece p : choices) {
