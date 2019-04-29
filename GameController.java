@@ -97,10 +97,10 @@ public class GameController {
             to.queue(selectedPiece, true);
 
             if (!inCheck(color)) {
-                if (to.getColumn() == Column.B) {
+                if (to.getColumn() == Column.B && to.getRow() == Row.ONE) {
                     if (array[12].getPosition() != null) {
                         rook = array[12];
-                        if (rook.getPosition().getRow() == Row.ONE && rook.getPosition().getColumn() == Column.A && !rook.hasMoved()) {
+                        if (!rook.hasMoved()) {
                             selectedPiece.update(false);
                             from.update(false);
                             to.update(false);
@@ -111,14 +111,42 @@ public class GameController {
                             selectedPiece.setLastMove(currentMove);
                         }
                     }
-                } else if (to.getColumn() == Column.G) {
-                    if (array[13].getPosition() != null) {
+                } else if (to.getColumn() == Column.G && to.getRow() == Row.ONE) {
+                    if (array[12].getPosition() != null) {
                         rook = array[13];
-                        if (rook.getPosition().getRow() == Row.ONE && rook.getPosition().getColumn() == Column.H && !rook.hasMoved()) {
+                        if (!rook.hasMoved()) {
                             selectedPiece.update(false);
                             from.update(false);
                             to.update(false);
                             pos = Board.findPosition(Column.F, Row.ONE);
+                            rook.setPosition(pos);
+                            pos.setPiece(rook);
+                            turn = !turn;
+                            selectedPiece.setLastMove(currentMove);
+                        }
+                    }
+                } else if (to.getColumn() == Column.B && to.getRow() == Row.EIGHT) {
+                    if (array[12].getPosition() != null) {
+                        rook = array[12];
+                        if (!rook.hasMoved()) {
+                            selectedPiece.update(false);
+                            from.update(false);
+                            to.update(false);
+                            pos = Board.findPosition(Column.C, Row.EIGHT);
+                            rook.setPosition(pos);
+                            pos.setPiece(rook);
+                            turn = !turn;
+                            selectedPiece.setLastMove(currentMove);
+                        }
+                    }
+                } else if (to.getColumn() == Column.G && to.getRow() == Row.EIGHT) {
+                    if (array[13].getPosition() != null) {
+                        rook = array[13];
+                        if (!rook.hasMoved()) {
+                            selectedPiece.update(false);
+                            from.update(false);
+                            to.update(false);
+                            pos = Board.findPosition(Column.F, Row.EIGHT);
                             rook.setPosition(pos);
                             pos.setPiece(rook);
                             turn = !turn;
